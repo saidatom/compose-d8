@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 
 services:
   web:
@@ -9,26 +9,24 @@ services:
       - ./:/var/www
     ports:
       - "80:80"
-    networks:
-      - code-network
+    links:
+      - app
   app:
     build:
       context: ./
       dockerfile: app.docker
     volumes:
       - ./:/var/www
+    links:
+      - db
     environment:
-      - DB_PORT=3306
-      - DB_HOST=db
-    networks:
-      - code-network
+      DB_PORT: 3306
+      DB_HOST: db
   db:
-    image: mysql:5.7
+    image: mariadb
+    restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=secret
-      - MYSQL_DATABASE=dockerDrupal
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: drupalDocker
     ports:
-      - "3306:3306"
-networks:
-    code-network:
-      driver: bridge
+      - "33061:3306"
